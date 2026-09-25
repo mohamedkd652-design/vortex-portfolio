@@ -1,0 +1,705 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Mohamed Tareq (Vortex) — بورتفوليو شخصي ⚡</title>
+<meta name="description" content="بورتفوليو محمد طارق (Vortex) — مطور برمجيات، أدوات إنتاجية، ألعاب وحلول تقنية." />
+
+<!-- Tailwind CSS (CDN) -->
+<script src="https://cdn.tailwindcss.com"></script>
+<script>
+  tailwind.config = {
+    theme: {
+      extend: {
+        colors: {
+          void:  "#070b16",
+          abyss: "#0b1220",
+          panel: "#101a30",
+          neon:  "#38bdf8",
+          violet:"#a78bfa",
+          pink:  "#f472b6",
+          gold:  "#facc15",
+        },
+        fontFamily: {
+          sans:  ['Cairo', 'Segoe UI', 'sans-serif'],
+          mono:  ['Orbitron', 'monospace'],
+        },
+      },
+    },
+  };
+</script>
+
+<!-- الخطوط -->
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800;900&family=Orbitron:wght@500;700;900&display=swap" rel="stylesheet" />
+
+<style>
+  /* ===== أساسيات ===== */
+  html { scroll-behavior: smooth; scroll-padding-top: 96px; }
+  body { font-family: 'Cairo', sans-serif; overflow-x: hidden; }
+  ::selection { background: rgba(56,189,248,.35); color: #fff; }
+
+  /* سكرولبار نيون */
+  ::-webkit-scrollbar { width: 10px; }
+  ::-webkit-scrollbar-track { background: #070b16; }
+  ::-webkit-scrollbar-thumb {
+    background: linear-gradient(180deg, #38bdf8, #a78bfa);
+    border-radius: 8px; border: 2px solid #070b16;
+  }
+
+  /* ===== كلاس الزجاج ===== */
+  .glass {
+    background: rgba(255,255,255,.035);
+    backdrop-filter: blur(18px);
+    -webkit-backdrop-filter: blur(18px);
+    border: 1px solid rgba(255,255,255,.08);
+  }
+  .glass-strong {
+    background: rgba(13,20,38,.78);
+    backdrop-filter: blur(22px);
+    -webkit-backdrop-filter: blur(22px);
+    border: 1px solid rgba(255,255,255,.09);
+  }
+
+  /* ===== نص متدرج متحرك ===== */
+  .text-grad {
+    background: linear-gradient(90deg,#38bdf8,#a78bfa,#f472b6,#38bdf8);
+    background-size: 300% 100%;
+    -webkit-background-clip: text; background-clip: text;
+    color: transparent;
+    animation: gradShift 7s linear infinite;
+  }
+  @keyframes gradShift { to { background-position: 300% 0; } }
+
+  /* ===== فقاعات الخلفية ===== */
+  .blob {
+    position: fixed; border-radius: 50%; filter: blur(90px);
+    opacity: .5; pointer-events: none; z-index: 0;
+    animation: drift 16s ease-in-out infinite alternate;
+  }
+  @keyframes drift {
+    0%   { transform: translate(0,0) scale(1); }
+    50%  { transform: translate(-40px,30px) scale(1.15); }
+    100% { transform: translate(30px,-40px) scale(.95); }
+  }
+
+  /* ===== كشف عند السكرول ===== */
+  .reveal { opacity: 0; transform: translateY(30px); transition: opacity .8s cubic-bezier(.22,.61,.36,1), transform .8s cubic-bezier(.22,.61,.36,1); }
+  .reveal.visible { opacity: 1; transform: none; }
+
+  /* ===== توهج الأزرار ===== */
+  .btn-glow { transition: all .25s ease, box-shadow .3s ease; }
+  .btn-glow:hover { box-shadow: 0 0 26px rgba(56,189,248,.5), 0 0 60px rgba(167,139,250,.28); transform: translateY(-2px); }
+
+  /* ===== كروت المشاريع ===== */
+  .tilt { transition: transform .2s ease, box-shadow .35s ease; will-change: transform; }
+  .tilt:hover { box-shadow: 0 20px 60px rgba(56,189,248,.22), 0 0 40px rgba(167,139,250,.16); }
+  .card-border { position: relative; overflow: hidden; }
+  .card-border::before {
+    content: ""; position: absolute; inset: 0; border-radius: inherit; padding: 1px;
+    background: linear-gradient(135deg, rgba(56,189,248,.55), rgba(167,139,250,.35), transparent 60%);
+    -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+    -webkit-mask-composite: xor; mask-composite: exclude;
+    opacity: 0; transition: opacity .35s ease; pointer-events: none;
+  }
+  .card-border:hover::before { opacity: 1; }
+
+  /* ===== نبض نقطة الحالة ===== */
+  .pulse-dot { position: relative; }
+  .pulse-dot::after {
+    content: ""; position: absolute; inset: -5px; border-radius: 50%;
+    border: 2px solid rgba(52,211,153,.7); animation: pulseRing 1.8s ease-out infinite;
+  }
+  @keyframes pulseRing { 0% { transform: scale(.6); opacity: 1; } 100% { transform: scale(1.6); opacity: 0; } }
+
+  /* ===== مجسمات / شارات ===== */
+  .skill-chip { transition: all .25s ease; }
+  .skill-chip:hover { transform: translateY(-4px) scale(1.04); border-color: rgba(56,189,248,.6) !important; box-shadow: 0 8px 30px rgba(56,189,248,.25); }
+
+  /* ===== سهم الهيرو ===== */
+  @keyframes bounceDown { 0%,100% { transform: translateY(0); } 50% { transform: translateY(10px); } }
+  .bounce-down { animation: bounceDown 1.6s ease-in-out infinite; }
+
+  /* ===== أزرار الموبايل المساحة ===== */
+  #mobileMenu { max-height: 0; opacity: 0; transition: max-height .4s ease, opacity .35s ease; overflow: hidden; }
+  #mobileMenu.open { max-height: 420px; opacity: 1; }
+
+  /* ===== شريط التقدم ===== */
+  #progressBar { height: 3px; background: linear-gradient(90deg,#38bdf8,#a78bfa,#f472b6); width: 0%; }
+
+  /* ===== حلقة الأفاتار ===== */
+  .avatar-ring { animation: spinSlow 14s linear infinite; }
+  @keyframes spinSlow { to { transform: rotate(360deg); } }
+</style>
+</head>
+
+<body class="bg-void text-slate-200 antialiased selection:bg-neon/30">
+
+<!-- ======== الخلفية الحية ======== -->
+<div class="fixed inset-0 z-0 pointer-events-none">
+  <div class="absolute inset-0 bg-[radial-gradient(circle_at_50%_-10%,rgba(56,189,248,.14),transparent_55%)]"></div>
+  <div class="absolute inset-0 bg-[linear-gradient(rgba(255,255,255,.028)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,.028)_1px,transparent_1px)] bg-[size:64px_64px]"></div>
+  <div class="blob w-[480px] h-[480px] bg-neon/25 -top-40 -right-40"></div>
+  <div class="blob w-[420px] h-[420px] bg-violet/25 -bottom-32 -left-32" style="animation-delay:-6s"></div>
+  <div class="blob w-[300px] h-[300px] bg-pink/20 top-1/2 left-1/3" style="animation-delay:-11s"></div>
+</div>
+
+<!-- توهج يتبع الماوس (ديسكتوب فقط) -->
+<div id="cursorGlow" class="hidden md:block fixed w-[420px] h-[420px] rounded-full pointer-events-none z-0 opacity-0 transition-opacity duration-500"
+     style="background:radial-gradient(circle,rgba(56,189,248,.07),transparent 60%);"></div>
+
+<!-- شريط تقدم السكرول -->
+<div class="fixed top-0 right-0 left-0 z-[60]"><div id="progressBar"></div></div>
+
+<!-- ======== شريط التنقل ======== -->
+<nav id="navbar" class="fixed top-0 right-0 left-0 z-50 transition-all duration-300">
+  <div class="max-w-6xl mx-auto px-4 sm:px-6">
+    <div class="glass rounded-2xl mt-3 px-4 sm:px-6 h-16 flex items-center justify-between">
+      <!-- اللوجو -->
+      <a href="#top" class="flex items-center gap-2 group">
+        <span class="w-9 h-9 rounded-xl grid place-items-center text-lg font-black text-void"
+              style="background:linear-gradient(135deg,#38bdf8,#a78bfa); box-shadow:0 0 20px rgba(56,189,248,.45);">⚡</span>
+        <span class="font-black text-lg tracking-tight">
+          <span class="text-white">Mohamed</span> <span class="text-grad">Tareq</span>
+        </span>
+      </a>
+
+      <!-- روابط الديسكتوب -->
+      <div class="hidden md:flex items-center gap-1 font-bold text-sm">
+        <a href="#top"      class="px-4 py-2 rounded-xl text-slate-300 hover:text-white hover:bg-white/5 transition">الرئيسية</a>
+        <a href="#projects" class="px-4 py-2 rounded-xl text-slate-300 hover:text-white hover:bg-white/5 transition">المشاريع</a>
+        <a href="#skills"   class="px-4 py-2 rounded-xl text-slate-300 hover:text-white hover:bg-white/5 transition">المهارات</a>
+        <a href="#contact"  class="px-4 py-2 rounded-xl text-slate-300 hover:text-white hover:bg-white/5 transition">التواصل</a>
+        <button onclick="copyDiscord()" class="btn-glow mr-2 px-4 py-2 rounded-xl font-bold text-sm text-void"
+                style="background:linear-gradient(135deg,#38bdf8,#a78bfa);">💬 Discord</button>
+      </div>
+
+      <!-- زرار الموبايل -->
+      <button id="menuBtn" class="md:hidden w-10 h-10 rounded-xl glass grid place-items-center text-xl" aria-label="القائمة">
+        ☰
+      </button>
+    </div>
+  </div>
+
+  <!-- قائمة الموبايل -->
+  <div id="mobileMenu" class="md:hidden max-w-6xl mx-4 mt-2">
+    <div class="glass-strong rounded-2xl p-3 flex flex-col gap-1 font-bold text-sm">
+      <a href="#top"      class="px-4 py-3 rounded-xl hover:bg-white/5">🏠 الرئيسية</a>
+      <a href="#projects" class="px-4 py-3 rounded-xl hover:bg-white/5">🚀 المشاريع</a>
+      <a href="#skills"   class="px-4 py-3 rounded-xl hover:bg-white/5">⚡ المهارات</a>
+      <a href="#contact"  class="px-4 py-3 rounded-xl hover:bg-white/5">💬 التواصل</a>
+      <button onclick="copyDiscord()" class="px-4 py-3 rounded-xl font-black text-void mt-1"
+              style="background:linear-gradient(135deg,#38bdf8,#a78bfa);">💬 انسخ اسم الديسكورد</button>
+    </div>
+  </div>
+</nav>
+
+<main class="relative z-10">
+
+  <!-- ==================== HERO ==================== -->
+  <section id="top" class="relative pt-36 sm:pt-44 pb-20 px-4 sm:px-6">
+    <div class="max-w-6xl mx-auto grid lg:grid-cols-[1.15fr_.85fr] gap-12 items-center">
+
+      <!-- النص -->
+      <div class="text-center lg:text-right">
+        <div class="reveal inline-flex items-center gap-2 glass rounded-full px-4 py-1.5 text-xs font-bold text-neon mb-6">
+          <span class="w-2 h-2 rounded-full bg-neon pulse-dot"></span> أهلاً بيك! أنا مطوّر شغوف
+        </div>
+
+        <h1 class="reveal text-5xl sm:text-6xl lg:text-7xl font-black leading-[1.1] mb-4" style="transition-delay:.1s">
+          <span class="block text-white">Mohamed</span>
+          <span class="block text-grad">Tareq <span class="text-white/30 font-bold">(Vortex)</span></span>
+        </h1>
+
+        <div class="reveal flex items-center justify-center lg:justify-start gap-2 text-lg sm:text-xl font-bold mb-6 text-slate-300" style="transition-delay:.2s">
+          <span class="text-neon">✦</span>
+          <span id="rotator" class="text-white min-h-[1.6em]"></span>
+        </div>
+
+        <p class="reveal max-w-xl mx-auto lg:mx-0 text-slate-400 leading-relaxed mb-8 text-sm sm:text-base" style="transition-delay:.3s">
+          بحب أحوّل الأفكار لأدوات حقيقية 🧠 — برمجيات، ألعاب، وحلول تقنية عملية.
+          بصنّع أدوات من السلسلة دي بيدي وبيلعب 👨‍💻🎮: من مؤقّت تركيز وحاجب مشتتات،
+          لتخصيص حالة الديسكورد، ومش بعيد عن تحسين أداء الجهاز وتجارب الواجهات.
+        </p>
+
+        <div class="reveal flex flex-wrap justify-center lg:justify-start gap-3" style="transition-delay:.4s">
+          <a href="#projects" class="btn-glow px-7 py-3.5 rounded-2xl font-black text-void text-sm"
+             style="background:linear-gradient(135deg,#38bdf8,#a78bfa);">🚀 شوف مشاريعي</a>
+          <a href="#contact" class="btn-glow glass px-7 py-3.5 rounded-2xl font-bold text-sm text-white hover:bg-white/10">💬 تواصل معايا</a>
+        </div>
+
+        <!-- إحصائيات -->
+        <div class="reveal mt-12 flex items-center justify-center lg:justify-start gap-6 sm:gap-10" style="transition-delay:.5s">
+          <div><div class="font-mono text-3xl font-black text-grad">+6</div><div class="text-xs text-slate-500 mt-1">أدوات جاهزة</div></div>
+          <div class="w-px h-10 bg-white/10"></div>
+          <div><div class="font-mono text-3xl font-black text-grad">2</div><div class="text-xs text-slate-500 mt-1">EXE على الديسكتوب</div></div>
+          <div class="w-px h-10 bg-white/10"></div>
+          <div><div class="font-mono text-3xl font-black text-grad">100%</div><div class="text-xs text-slate-500 mt-1">شغف وتطبيق</div></div>
+        </div>
+      </div>
+
+      <!-- الأفاتار -->
+      <div class="reveal hidden lg:flex justify-center" style="transition-delay:.35s">
+        <div class="relative">
+          <div class="absolute inset-0 rounded-[2.2rem] opacity-40 blur-2xl" style="background:linear-gradient(135deg,#38bdf8,#a78bfa);"></div>
+          <div class="relative glass rounded-[2.2rem] p-8 w-[320px] flex flex-col items-center">
+            <div class="relative mb-5">
+              <svg class="avatar-ring absolute -inset-3 w-[calc(100%+24px)] h-[calc(100%+24px)]" viewBox="0 0 100 100">
+                <defs>
+                  <linearGradient id="ringGrad" x1="0" y1="0" x2="1" y2="1">
+                    <stop offset="0%" stop-color="#38bdf8"/><stop offset="100%" stop-color="#a78bfa"/>
+                  </linearGradient>
+                </defs>
+                <circle cx="50" cy="50" r="46" fill="none" stroke="url(#ringGrad)" stroke-width="2"
+                        stroke-dasharray="60 230" stroke-linecap="round"/>
+              </svg>
+              <div class="w-32 h-32 rounded-full grid place-items-center text-6xl glass"
+                   style="box-shadow:0 0 40px rgba(56,189,248,.35) inset, 0 0 30px rgba(167,139,250,.25);">🐍</div>
+            </div>
+            <div class="font-mono text-neon text-xs tracking-widest mb-1">// developer.gamer.creator</div>
+            <div class="font-black text-xl text-white mb-1">Mohamed Tareq</div>
+            <div class="text-slate-500 text-xs mb-4 text-center">ببني أدوات مش بتعتمد على حد — وبطوّرها بنفسي 🔧</div>
+            <div class="flex gap-2 w-full">
+              <div class="flex-1 glass rounded-xl py-2 text-center text-xs font-bold text-neon">Python</div>
+              <div class="flex-1 glass rounded-xl py-2 text-center text-xs font-bold text-violet">C · CS50</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- سهم التمرير -->
+    <div class="hidden md:flex justify-center mt-20">
+      <a href="#projects" class="bounce-down text-2xl text-slate-500 hover:text-neon transition" aria-label="نزّل">⌄</a>
+    </div>
+  </section>
+
+  <!-- ==================== المشاريع ==================== -->
+  <section id="projects" class="py-20 px-4 sm:px-6">
+    <div class="max-w-6xl mx-auto">
+      <div class="text-center mb-14 reveal">
+        <span class="inline-block glass rounded-full px-4 py-1.5 text-xs font-bold text-violet mb-4">🧩 Portfolio</span>
+        <h2 class="text-4xl sm:text-5xl font-black text-white mb-3">المشاريع <span class="text-grad">اللي بفخر بيها</span></h2>
+        <p class="text-slate-400 max-w-xl mx-auto text-sm">أدوات حقيقية اتبنيت من الصفر واتجمّعت لملفات تنفيذية (EXE) بلمسات نيون.</p>
+      </div>
+
+      <div class="grid md:grid-cols-2 gap-8">
+
+        <!-- ===== مشروع 1: Focus Hub ===== -->
+        <article class="reveal tilt card-border glass rounded-3xl p-6 sm:p-8 flex flex-col">
+          <div class="flex items-start justify-between mb-6">
+            <div class="w-16 h-16 rounded-2xl grid place-items-center text-3xl"
+                 style="background:linear-gradient(135deg,rgba(56,189,248,.18),rgba(167,139,250,.12)); border:1px solid rgba(56,189,248,.3);">
+              🧠</div>
+            <span class="text-[11px] font-bold text-neon glass rounded-full px-3 py-1">مؤقّت + حاجب مشتتات</span>
+          </div>
+
+          <h3 class="font-black text-2xl text-white mb-2">Vortex <span class="text-grad">Focus Hub</span></h3>
+          <p class="text-slate-400 text-sm leading-relaxed mb-5">
+            مساعد مذاكرة وتركيز شامل: مؤقّت بومودورو 25/5 بتنبيّه صوتي، حاجب تلقائي للتطبيقات المشتّتة،
+            مؤقّتات صوتية (مطر/لوفي/ضجيج أبيض)، قائمة مهام + عدّاد امتحانات — في واجهة داكنة بإيقاع نيون.
+          </p>
+
+          <div class="flex flex-wrap gap-2 mb-6">
+            <span class="text-xs font-bold text-slate-300 bg-white/5 border border-white/10 rounded-lg px-3 py-1">Python</span>
+            <span class="text-xs font-bold text-slate-300 bg-white/5 border border-white/10 rounded-lg px-3 py-1">CustomTkinter</span>
+            <span class="text-xs font-bold text-slate-300 bg-white/5 border border-white/10 rounded-lg px-3 py-1">pygame</span>
+            <span class="text-xs font-bold text-slate-300 bg-white/5 border border-white/10 rounded-lg px-3 py-1">Pillow</span>
+          </div>
+
+          <div class="mt-auto flex gap-3">
+            <button class="btn-glow flex-1 px-4 py-3 rounded-xl font-black text-void text-sm"
+                    style="background:linear-gradient(135deg,#38bdf8,#a78bfa);"
+                    onclick="downloadExe('VortexFocus.exe','بلّص VortexFocus.exe جنب index.html عشان يشتغل التحميل المباشر')">
+              ⬇ تحميل EXE
+            </button>
+            <button class="btn-glow glass flex-1 px-4 py-3 rounded-xl font-bold text-sm text-white hover:bg-white/10"
+                    onclick="openDetails('focus')">👁 عرض التفاصيل</button>
+          </div>
+        </article>
+
+        <!-- ===== مشروع 2: Custom RPC ===== -->
+        <article class="reveal tilt card-border glass rounded-3xl p-6 sm:p-8 flex flex-col" style="transition-delay:.12s">
+          <div class="flex items-start justify-between mb-6">
+            <div class="w-16 h-16 rounded-2xl grid place-items-center text-3xl"
+                 style="background:linear-gradient(135deg,rgba(167,139,250,.18),rgba(244,114,182,.12)); border:1px solid rgba(167,139,250,.3);">
+              💬</div>
+            <span class="text-[11px] font-bold text-violet glass rounded-full px-3 py-1">Discord Rich Presence</span>
+          </div>
+
+          <h3 class="font-black text-2xl text-white mb-2">Vortex <span class="text-grad">Custom RPC</span></h3>
+          <p class="text-slate-400 text-sm leading-relaxed mb-5">
+            برنامج سطح مكتب لتخصيص حالة الديسكورد بالكامل: تفاصيل وحالة، صور كبيرة/صغيرة، زرارين تفاعليين،
+            مؤقّت زمني تلقائي، وبروفايلات جاهزة (مذاكرة / ألعاب / محتوى) تتبدّل بضغطة زر.
+          </p>
+
+          <div class="flex flex-wrap gap-2 mb-6">
+            <span class="text-xs font-bold text-slate-300 bg-white/5 border border-white/10 rounded-lg px-3 py-1">Python</span>
+            <span class="text-xs font-bold text-slate-300 bg-white/5 border border-white/10 rounded-lg px-3 py-1">CustomTkinter</span>
+            <span class="text-xs font-bold text-slate-300 bg-white/5 border border-white/10 rounded-lg px-3 py-1">pypresence</span>
+            <span class="text-xs font-bold text-slate-300 bg-white/5 border border-white/10 rounded-lg px-3 py-1">Discord API</span>
+          </div>
+
+          <div class="mt-auto flex gap-3">
+            <button class="btn-glow flex-1 px-4 py-3 rounded-xl font-black text-void text-sm"
+                    style="background:linear-gradient(135deg,#a78bfa,#f472b6);"
+                    onclick="downloadExe('VortexRPC.exe','بلّص VortexRPC.exe جنب index.html عشان يشتغل التحميل المباشر')">
+              ⬇ تحميل EXE
+            </button>
+            <button class="btn-glow glass flex-1 px-4 py-3 rounded-xl font-bold text-sm text-white hover:bg-white/10"
+                    onclick="openDetails('rpc')">👁 عرض التفاصيل</button>
+          </div>
+        </article>
+
+        <!-- ===== مشروع قادم ===== -->
+        <article class="reveal md:col-span-2 rounded-3xl border-2 border-dashed border-white/10 p-8 flex items-center justify-center gap-3 text-slate-500 hover:border-neon/40 hover:text-slate-300 transition group" style="transition-delay:.2s">
+          <span class="text-2xl group-hover:scale-125 transition">👀</span>
+          <span class="font-bold text-sm">مشروعك الجاي هنا — لسة شغّال على الحتة الجاية...</span>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <!-- ==================== المهارات ==================== -->
+  <section id="skills" class="py-20 px-4 sm:px-6">
+    <div class="max-w-6xl mx-auto">
+      <div class="text-center mb-14 reveal">
+        <span class="inline-block glass rounded-full px-4 py-1.5 text-xs font-bold text-gold mb-4">⚡ Toolkit</span>
+        <h2 class="text-4xl sm:text-5xl font-black text-white mb-3">المهارات <span class="text-grad">والاهتمامات</span></h2>
+        <p class="text-slate-400 max-w-xl mx-auto text-sm">أدوات وشغف بيشغّلوني كل يوم.</p>
+      </div>
+
+      <div class="glass rounded-3xl p-6 sm:p-10 reveal">
+        <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-4">
+
+          <div class="skill-chip glass rounded-2xl p-4 flex flex-col items-center gap-2 text-center">
+            <span class="text-3xl">🐍</span>
+            <span class="font-black text-sm text-white">Python</span>
+            <span class="text-[10px] text-slate-500">قلب كل أدواتي</span>
+          </div>
+
+          <div class="skill-chip glass rounded-2xl p-4 flex flex-col items-center gap-2 text-center">
+            <span class="text-3xl">🖥️</span>
+            <span class="font-black text-sm text-white">CustomTkinter</span>
+            <span class="text-[10px] text-slate-500">واجهات داكنة شيك</span>
+          </div>
+
+          <div class="skill-chip glass rounded-2xl p-4 flex flex-col items-center gap-2 text-center">
+            <span class="text-3xl">🧠</span>
+            <span class="font-black text-sm text-white">C · CS50</span>
+            <span class="text-[10px] text-slate-500">أساسيات الحاسوب</span>
+          </div>
+
+          <div class="skill-chip glass rounded-2xl p-4 flex flex-col items-center gap-2 text-center">
+            <span class="text-3xl">⚡</span>
+            <span class="font-black text-sm text-white">System Optimization</span>
+            <span class="text-[10px] text-slate-500">أداء وتنظيف الجهاز</span>
+          </div>
+
+          <div class="skill-chip glass rounded-2xl p-4 flex flex-col items-center gap-2 text-center">
+            <span class="text-3xl">📦</span>
+            <span class="font-black text-sm text-white">PyInstaller</span>
+            <span class="text-[10px] text-slate-500">EXE بلمسة واحدة</span>
+          </div>
+
+          <div class="skill-chip glass rounded-2xl p-4 flex flex-col items-center gap-2 text-center">
+            <span class="text-3xl">💬</span>
+            <span class="font-black text-sm text-white">Discord API</span>
+            <span class="text-[10px] text-slate-500">RPC و بوتات</span>
+          </div>
+        </div>
+
+        <!-- اهتمامات -->
+        <div class="mt-10 pt-8 border-t border-white/10">
+          <div class="font-bold text-slate-400 text-sm mb-4">شغف غير البرمجة 🎯</div>
+          <div class="flex flex-wrap gap-3">
+            <span class="text-xs font-bold text-slate-200 bg-white/5 border border-white/10 rounded-full px-4 py-2 hover:border-neon/50 transition">🎮 ألعاب اونلاين</span>
+            <span class="text-xs font-bold text-slate-200 bg-white/5 border border-white/10 rounded-full px-4 py-2 hover:border-neon/50 transition">🎬 مونتاج ومحتوى</span>
+            <span class="text-xs font-bold text-slate-200 bg-white/5 border border-white/10 rounded-full px-4 py-2 hover:border-neon/50 transition">🎨 تصميم واجهات</span>
+            <span class="text-xs font-bold text-slate-200 bg-white/5 border border-white/10 rounded-full px-4 py-2 hover:border-neon/50 transition">🔧 حلول يومية ذكية</span>
+            <span class="text-xs font-bold text-slate-200 bg-white/5 border border-white/10 rounded-full px-4 py-2 hover:border-neon/50 transition">🧩 تحديات CS50</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ==================== التواصل ==================== -->
+  <section id="contact" class="py-20 px-4 sm:px-6">
+    <div class="max-w-4xl mx-auto">
+      <div class="text-center mb-12 reveal">
+        <span class="inline-block glass rounded-full px-4 py-1.5 text-xs font-bold text-neon mb-4">📡 Let's Talk</span>
+        <h2 class="text-4xl sm:text-5xl font-black text-white mb-3">خلّينا <span class="text-grad">نتواصل</span></h2>
+        <p class="text-slate-400 max-w-xl mx-auto text-sm">اضغط على البطاقة دي عشان تنسخ اسم الديسكورد — وإلا خدني من أي مكان 💬</p>
+      </div>
+
+      <div class="grid sm:grid-cols-2 gap-6">
+
+        <!-- بطاقة الديسكورد (نسخ) -->
+        <button onclick="copyDiscord()" class="reveal group relative glass rounded-3xl p-8 text-right cursor-pointer overflow-hidden text-left" style="dir:ltr">
+          <div class="absolute -top-10 -right-10 w-40 h-40 rounded-full opacity-25 group-hover:opacity-50 transition" style="background:radial-gradient(circle,#5865F2,transparent 65%);"></div>
+          <div class="flex items-center gap-4 mb-6">
+            <div class="relative">
+              <div class="w-16 h-16 rounded-2xl grid place-items-center text-3xl bg-[#5865F2]/20 border border-[#5865F2]/40">💬</div>
+              <span class="pulse-dot absolute -bottom-1 -right-1 w-4 h-4 rounded-full bg-green-400"></span>
+            </div>
+            <div>
+              <div class="font-black text-xl text-white flex items-center gap-2">Discord <span class="text-xs font-bold text-green-400">● متاح غالبًا</span></div>
+              <div class="font-mono text-neon text-sm mt-0.5" id="discordName">@vortex_tareq</div>
+            </div>
+          </div>
+          <div class="flex items-center justify-between bg-white/5 border border-white/10 rounded-xl px-4 py-3 group-hover:border-[#5865F2]/60 transition">
+            <span class="font-mono text-sm text-slate-300" dir="ltr">@vortex_tareq</span>
+            <span class="text-xs font-bold text-[#5865F2] bg-white/5 rounded-lg px-3 py-1.5 transition group-hover:bg-[#5865F2] group-hover:text-white">📋 اضغط للنسخ</span>
+          </div>
+        </button>
+
+        <!-- روابط الحسابات -->
+        <div class="reveal glass rounded-3xl p-8 flex flex-col gap-3" style="transition-delay:.12s">
+          <div class="font-black text-lg text-white mb-1">روابطي 🔗</div>
+
+          <a href="https://github.com/" target="_blank" rel="noopener"
+             class="flex items-center gap-3 bg-white/5 hover:bg-white/10 border border-white/10 hover:border-neon/50 rounded-xl px-4 py-3 transition group">
+            <span class="text-xl">🐙</span>
+            <span class="font-bold text-sm flex-1">GitHub</span>
+            <span class="text-xs text-slate-500 group-hover:text-neon transition font-mono">github.com/mohamedtareq</span>
+          </a>
+
+          <a href="https://www.youtube.com/" target="_blank" rel="noopener"
+             class="flex items-center gap-3 bg-white/5 hover:bg-white/10 border border-white/10 hover:border-red-400/50 rounded-xl px-4 py-3 transition group">
+            <span class="text-xl">▶️</span>
+            <span class="font-bold text-sm flex-1">YouTube</span>
+            <span class="text-xs text-slate-500 group-hover:text-red-400 transition font-mono">@vortex</span>
+          </a>
+
+          <a href="https://www.twitch.tv/" target="_blank" rel="noopener"
+             class="flex items-center gap-3 bg-white/5 hover:bg-white/10 border border-white/10 hover:border-violet/50 rounded-xl px-4 py-3 transition group">
+            <span class="text-xl">🎮</span>
+            <span class="font-bold text-sm flex-1">Twitch</span>
+            <span class="text-xs text-slate-500 group-hover:text-violet transition font-mono">twitch.tv/vortex</span>
+          </a>
+
+          <a href="mailto:mohamed.tareq.dev@gmail.com"
+             class="flex items-center gap-3 bg-white/5 hover:bg-white/10 border border-white/10 hover:border-gold/50 rounded-xl px-4 py-3 transition group">
+            <span class="text-xl">✉️</span>
+            <span class="font-bold text-sm flex-1">Email</span>
+            <span class="text-xs text-slate-500 group-hover:text-gold transition font-mono" dir="ltr">mohamed.tareq.dev@gmail.com</span>
+          </a>
+        </div>
+      </div>
+    </div>
+  </section>
+</main>
+
+<!-- ======== الفوتر ======== -->
+<footer class="relative z-10 border-t border-white/5 py-8 px-4">
+  <div class="max-w-6xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-4">
+    <div class="text-sm text-slate-500">صنع بشغف ⚡ <span class="font-bold text-slate-300">Mohamed Tareq</span> — سلسلة Vortex</div>
+    <div class="flex gap-4 text-slate-500 text-sm">
+      <a href="#top" class="hover:text-neon transition">⬆ للأعلى</a>
+      <span class="text-white/10">|</span>
+      <span class="font-mono text-xs">© 2026</span>
+    </div>
+  </div>
+</footer>
+
+<!-- زرار العودة للأعلى -->
+<button id="toTop" onclick="window.scrollTo({top:0,behavior:'smooth'})"
+        class="fixed bottom-6 left-6 z-50 w-12 h-12 rounded-2xl glass-strong grid place-items-center text-xl opacity-0 pointer-events-none transition-all duration-300 hover:shadow-[0_0_25px_rgba(56,189,248,.5)]"
+        aria-label="العودة للأعلى">⬆</button>
+
+<!-- ======== مودال تفاصيل المشروع ======== -->
+<div id="detailsModal" class="fixed inset-0 z-[70] hidden items-center justify-center p-4">
+  <div class="absolute inset-0 bg-black/70 backdrop-blur-sm" onclick="closeDetails()"></div>
+  <div class="relative glass-strong rounded-3xl max-w-xl w-full max-h-[85vh] overflow-y-auto p-7" dir="rtl">
+    <div class="flex items-start justify-between mb-5">
+      <div class="flex items-center gap-3">
+        <span id="m_emoji" class="w-12 h-12 rounded-xl grid place-items-center text-2xl bg-white/10">🧠</span>
+        <div>
+          <h3 id="m_title" class="font-black text-2xl text-white">العنوان</h3>
+          <span id="m_tag" class="text-xs font-bold text-neon"></span>
+        </div>
+      </div>
+      <button onclick="closeDetails()" class="w-9 h-9 rounded-xl bg-white/5 hover:bg-white/10 text-slate-300 font-bold">✕</button>
+    </div>
+    <p id="m_desc" class="text-slate-300 text-sm leading-relaxed mb-5"></p>
+    <div class="font-black text-sm text-white mb-3">⭐ المميزات</div>
+    <ul id="m_feats" class="space-y-2 mb-6"></ul>
+    <div class="font-black text-sm text-white mb-2">🧱 التقنيات</div>
+    <div id="m_tags" class="flex flex-wrap gap-2 mb-7"></div>
+    <button id="m_dl" class="btn-glow w-full px-4 py-3.5 rounded-2xl font-black text-void text-sm"
+            style="background:linear-gradient(135deg,#38bdf8,#a78bfa);">⬇ تحميل EXE</button>
+  </div>
+</div>
+
+<!-- ======== توست ======== -->
+<div id="toast" class="fixed bottom-6 right-6 z-[80] glass-strong rounded-2xl px-5 py-3.5 text-sm font-bold hidden items-center gap-3"
+     style="box-shadow:0 10px 40px rgba(56,189,248,.25);">
+  <span id="toastIcon">✅</span><span id="toastMsg"></span>
+</div>
+
+<script>
+/* ================= الأدوات ================= */
+const $  = (s, c=document) => c.querySelector(s);
+const $$ = (s, c=document) => [...c.querySelectorAll(s)];
+
+let toastTimer;
+function toast(msg, icon='✅') {
+  const t = $('#toast');
+  $('#toastIcon').textContent = icon;
+  $('#toastMsg').textContent = msg;
+  t.classList.remove('hidden'); t.classList.add('flex');
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => { t.classList.add('hidden'); t.classList.remove('flex'); }, 2600);
+}
+
+/* ================= نسخ الديسكورد ================= */
+function copyDiscord() {
+  const name = $('#discordName').textContent.trim();
+  const done = () => toast(`تم نسخ «${name}» — يلا نتكلم هناك 💬`, '📋');
+  if (navigator.clipboard && navigator.clipboard.writeText) {
+    navigator.clipboard.writeText(name).then(done).catch(() => fallbackCopy(name, done));
+  } else fallbackCopy(name, done);
+}
+function fallbackCopy(text, cb) {
+  const ta = document.createElement('textarea');
+  ta.value = text; ta.style.cssText = 'position:fixed;opacity:0';
+  document.body.appendChild(ta); ta.select();
+  try { document.execCommand('copy'); cb(); } catch { toast('انسخ اسمك يدويًا: ' + text, '⚠️'); }
+  ta.remove();
+}
+
+/* ================= الموبايل مينيو ================= */
+$('#menuBtn').addEventListener('click', () => $('#mobileMenu').classList.toggle('open'));
+$$('#mobileMenu a').forEach(a => a.addEventListener('click', () => $('#mobileMenu').classList.remove('open')));
+
+/* ================= الناف بار + شريط التقدم ================= */
+const navbar = $('#navbar'), progress = $('#progressBar'), toTop = $('#toTop');
+function onScroll() {
+  const y = window.scrollY, h = document.documentElement.scrollHeight - innerHeight;
+  progress.style.width = (h > 0 ? (y / h) * 100 : 0) + '%';
+  navbar.classList.toggle('shadow-[0_10px_40px_rgba(0,0,0,.5)]', y > 40);
+  const show = y > 600;
+  toTop.style.opacity = show ? '1' : '0';
+  toTop.style.pointerEvents = show ? 'auto' : 'none';
+}
+addEventListener('scroll', onScroll, { passive: true }); onScroll();
+
+/* ================= كشف العناصر عند السكرول ================= */
+const io = new IntersectionObserver(entries => {
+  entries.forEach(en => { if (en.isIntersecting) { en.target.classList.add('visible'); io.unobserve(en.target); } });
+}, { threshold: .12 });
+$$('.reveal').forEach(el => io.observe(el));
+
+/* ================= مقاطف تناوب الكلمات (hero) ================= */
+const ROLE_WORDS = ['مطوّر برمجيات 👨‍💻', 'لاعب شغوف 🎮', 'باحث عن الحلول 🔧', 'صانع أدوات Vortex ⚡'];
+let ri = 0, rotEl = null;
+function rotator() {
+  if (!rotEl) rotEl = $('#rotator');
+  rotEl.style.opacity = 0;
+  setTimeout(() => {
+    rotEl.textContent = ROLE_WORDS[ri = (ri + 1) % ROLE_WORDS.length];
+    rotEl.style.transition = 'opacity .45s ease'; rotEl.style.opacity = 1;
+  }, 350);
+}
+setInterval(rotator, 2400);
+$('#rotator').textContent = ROLE_WORDS[0];
+
+/* ================= ميلان كروت المشاريع (ديسكتوب فقط) ================= */
+if (window.matchMedia('(pointer:fine)').matches) {
+  $$('.tilt').forEach(card => {
+    card.addEventListener('mousemove', e => {
+      const r = card.getBoundingClientRect();
+      const x = (e.clientX - r.left) / r.width  - .5;
+      const y = (e.clientY - r.top)  / r.height - .5;
+      card.style.transform = `perspective(900px) rotateY(${x * 6}deg) rotateX(${-y * 6}deg) translateY(-3px)`;
+    });
+    card.addEventListener('mouseleave', () => { card.style.transform = ''; });
+  });
+}
+
+/* ================= توهج يتبع الماوس ================= */
+const glow = $('#cursorGlow');
+addEventListener('mousemove', e => {
+  if (matchMedia('(pointer:fine)').matches) {
+    glow.style.opacity = '1';
+    glow.style.left = (e.clientX - 210) + 'px';
+    glow.style.top  = (e.clientY - 210) + 'px';
+  }
+}, { passive: true });
+addEventListener('mouseleave', () => glow.style.opacity = '0');
+
+/* ================= بيانات المشاريع ================= */
+const PROJECTS = {
+  focus: {
+    emoji: '🧠', title: 'Vortex Focus Hub',
+    tag: 'مؤقّت بومودورو + حاجب مشتتات تلقائي',
+    desc: 'مساعد مذاكرة وتركيز متكامل بواجهة CustomTkinter داكنة بإيقاع نيون. بيجمع بين المؤقّت، الحظر الآلي للتطبيقات المشتتة، والمؤثرات الصوتية — كل حاجة في أداة واحدة تتجمّع ذاتيًا لـ EXE بأيقونة مخصوصة.',
+    feats: [
+      'مؤقّت بومودورو 25/5 مع تنبيه صوتي واضح',
+      'حاجب تلقائي للتطبيقات المشتتة (Game/App Blocker)',
+      'موسيقى تركيز: مطر 🌧 / لوفي 🎧 / ضجيج أبيض ⚪',
+      'قائمة مهام + عدّاد امتحانات (countdown)',
+      'عدّاد جلسات يومية تحفيزي',
+      'تجميع ذاتي لـ VortexFocus.exe + تنظيف تلقائي للملفات المؤقتة',
+    ],
+    tags: ['Python', 'CustomTkinter', 'pygame', 'Pillow', 'psutil', 'PyInstaller'],
+    exe: 'VortexFocus.exe',
+  },
+  rpc: {
+    emoji: '💬', title: 'Vortex Custom RPC',
+    tag: 'تخصيص Discord Rich Presence الاحترافي',
+    desc: 'برنامج سطح مكتب يخصّص حالة الديسكورد بالكامل من واجهة داكنة شيك: تفاصيل وحالة، صور كبيرة وصغيرة بمفاتيحها، زرارين تفاعليين بروابط، ومؤقّت Elapsed تلقائي — مع بروفايلات جاهزة تتغير بضغطة زر.',
+    feats: [
+      'تخصيص كامل: Details + State + Large/Small Image Keys',
+      'زرارين تفاعليين بحجم متناسق (روابط https://)',
+      'مؤقّت زمني يبدأ تلقائيًا مع زر إعادة العد',
+      'بروفايلات جاهزة: 📚 مذاكرة / 🎮 ألعاب / 🎬 محتوى',
+      'حفظ تلقائي للإعدادات + قائمة بروفايلات مخصصة',
+      'إعادة اتصال ذكية لو Discord انفصل',
+    ],
+    tags: ['Python', 'CustomTkinter', 'pypresence', 'Discord API', 'PyInstaller'],
+    exe: 'VortexRPC.exe',
+  },
+};
+
+/* ================= مودال التفاصيل ================= */
+function openDetails(key) {
+  const p = PROJECTS[key]; if (!p) return;
+  $('#m_emoji').textContent = p.emoji;
+  $('#m_title').textContent = p.title;
+  $('#m_tag').textContent = p.tag;
+  $('#m_desc').textContent = p.desc;
+  $('#m_feats').innerHTML = p.feats.map(f =>
+    `<li class="flex gap-2 text-sm text-slate-300"><span class="text-neon">✦</span><span>${f}</span></li>`).join('');
+  $('#m_tags').innerHTML = p.tags.map(t =>
+    `<span class="text-xs font-bold text-slate-200 bg-white/5 border border-white/10 rounded-lg px-3 py-1">${t}</span>`).join('');
+  const dl = $('#m_dl');
+  dl.onclick = () => downloadExe(p.exe, `بلّص ${p.exe} جنب index.html`);
+  $('#detailsModal').classList.remove('hidden'); $('#detailsModal').classList.add('flex');
+  document.body.style.overflow = 'hidden';
+}
+function closeDetails() {
+  $('#detailsModal').classList.add('hidden'); $('#detailsModal').classList.remove('flex');
+  document.body.style.overflow = '';
+}
+addEventListener('keydown', e => { if (e.key === 'Escape') closeDetails(); });
+
+/* ================= تحميل EXE ================= */
+function downloadExe(filename, hint) {
+  const a = document.createElement('a');
+  a.href = './' + filename;
+  a.download = filename;
+  document.body.appendChild(a);
+  a.click();
+  a.remove();
+  toast(`بدأ تحميل ${filename} ⬇ — ${hint}`, '⬇');
+}
+
+/* توهج الماوس: إخفاء على الموبايل بعد اللمس */
+addEventListener('touchstart', () => glow.style.display = 'none', { once: true, passive: true });
+</script>
+</body>
+</html>
