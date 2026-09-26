@@ -35,9 +35,13 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800;900&family=Orbitron:wght@500;700;900&display=swap" rel="stylesheet" />
 
+<!-- 3D Tilt — vanilla-tilt v1.8.1 (~3KB, بدون jQuery) -->
+<script src="https://cdn.jsdelivr.net/npm/vanilla-tilt@1.8.1/dist/vanilla-tilt.min.js" defer></script>
+
 <style>
   /* ===== أساسيات ===== */
-  html { scroll-behavior: smooth; scroll-padding-top: 96px; }
+  /* scrollbar-gutter: ب prevent القفزة لما نقفل سكرول الصفحة (لوحة الأوامر / المودال) */
+  html { scroll-behavior: smooth; scroll-padding-top: 96px; scrollbar-gutter: stable; }
   body { font-family: 'Cairo', sans-serif; overflow-x: hidden; }
   ::selection { background: rgba(56,189,248,.35); color: #fff; }
 
@@ -85,17 +89,26 @@
     100% { transform: translate(30px,-40px) scale(.95); }
   }
 
-  /* ===== كشف عند السكرول ===== */
-  .reveal { opacity: 0; transform: translateY(30px); transition: opacity .8s cubic-bezier(.22,.61,.36,1), transform .8s cubic-bezier(.22,.61,.36,1); }
-  .reveal.visible { opacity: 1; transform: none; }
+  /* ===== كشف عند السكرول =====
+     بنستخدم 'translate' (مش 'transform') عن قصد:
+     translate property منفصلة بتتّركب مع transform، فبيتفادى التعارض مع
+     inline transform اللي vanilla-tilt بيكتبه على نفس الكارت. */
+  .reveal { opacity: 0; translate: 0 30px; transition: opacity .8s cubic-bezier(.22,.61,.36,1), translate .8s cubic-bezier(.22,.61,.36,1); }
+  .reveal.visible { opacity: 1; translate: none; }
 
   /* ===== توهج الأزرار ===== */
   .btn-glow { transition: all .25s ease, box-shadow .3s ease; }
   .btn-glow:hover { box-shadow: 0 0 26px rgba(56,189,248,.5), 0 0 60px rgba(167,139,250,.28); transform: translateY(-2px); }
 
-  /* ===== كروت المشاريع ===== */
-  .tilt { transition: transform .2s ease, box-shadow .35s ease; will-change: transform; }
-  .tilt:hover { box-shadow: 0 20px 60px rgba(56,189,248,.22), 0 0 40px rgba(167,139,250,.16); }
+  /* ===== كروت المشاريع والتواصل (3D Tilt) =====
+     مفيش transition على transform هنا عن قصد — vanilla-tilt بيكتب transform
+     كل إطار وبيعمل الـsmoothing بنفسه (speed)، وأي transition كان هيعمل
+     double-smoothing (= تهريب). مانسب preserve-3d لأن backdrop-filter في
+     .glass بيعمل flatten للـ3D على كل المتصفحات. */
+  .tilt { will-change: transform; }
+  .tilt:hover {
+    box-shadow: 0 24px 70px rgba(56,189,248,.22), 0 0 45px rgba(167,139,250,.18);
+  }
   .card-border { position: relative; overflow: hidden; }
   .card-border::before {
     content: ""; position: absolute; inset: 0; border-radius: inherit; padding: 1px;
@@ -132,6 +145,58 @@
   /* ===== حلقة الأفاتار ===== */
   .avatar-ring { animation: spinSlow 14s linear infinite; }
   @keyframes spinSlow { to { transform: rotate(360deg); } }
+
+  /* ===== تقليل الحركة (Accessibility) =====
+     .reduce-motion  → المستخدم فعّلها يدويًا من لوحة الأوامر
+     :not(.motion-on) → تفضيل النظام، مفعّل قبل ما الـJS يشتغل */
+  html.reduce-motion *,
+  html.reduce-motion *::before,
+  html.reduce-motion *::after {
+    animation-duration: .01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: .01ms !important;
+    scroll-behavior: auto !important;
+  }
+  html.reduce-motion .reveal { opacity: 1 !important; translate: none !important; }
+  html.reduce-motion .tilt   { transform: none !important; }
+  @media (prefers-reduced-motion: reduce) {
+    html:not(.motion-on) *,
+    html:not(.motion-on) *::before,
+    html:not(.motion-on) *::after {
+      animation-duration: .01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: .01ms !important;
+      scroll-behavior: auto !important;
+    }
+    html:not(.motion-on) .reveal { opacity: 1 !important; translate: none !important; }
+    html:not(.motion-on) .tilt   { transform: none !important; }
+  }
+
+  /* ===== لوحة الأوامر (Ctrl+K) ===== */
+  #cmdPalette {
+    opacity: 0; visibility: hidden; pointer-events: none;
+    transition: opacity .18s ease, visibility 0s linear .18s;
+  }
+  #cmdPalette.open {
+    opacity: 1; visibility: visible; pointer-events: auto;
+    transition: opacity .18s ease, visibility 0s;
+  }
+  #cmdPanel {
+    transform: translateY(-14px) scale(.985); opacity: 0;
+    transition: transform .22s cubic-bezier(.2,.8,.4,1), opacity .18s ease;
+  }
+  #cmdPalette.open #cmdPanel { transform: none; opacity: 1; }
+  #cmdList { scrollbar-width: thin; scrollbar-color: rgba(56,189,248,.45) transparent; }
+  #cmdList::-webkit-scrollbar { width: 6px; }
+  #cmdList::-webkit-scrollbar-track { background: transparent; }
+  #cmdList::-webkit-scrollbar-thumb { background: rgba(56,189,248,.4); border-radius: 99px; border: none; }
+  .cmd-item { transition: background-color .12s ease, box-shadow .12s ease; }
+  .cmd-item[aria-selected="true"] {
+    background-color: rgba(56,189,248,.13);
+    box-shadow: inset 0 0 0 1px rgba(56,189,248,.28);
+  }
+  .cmd-ico { transition: transform .15s cubic-bezier(.2,.8,.4,1), filter .15s ease; }
+  .cmd-item[aria-selected="true"] .cmd-ico { transform: scale(1.18); filter: drop-shadow(0 0 8px rgba(56,189,248,.6)); }
 </style>
 </head>
 
@@ -144,6 +209,7 @@
   <div class="blob w-[480px] h-[480px] bg-neon/25 -top-40 -right-40"></div>
   <div class="blob w-[420px] h-[420px] bg-violet/25 -bottom-32 -left-32" style="animation-delay:-6s"></div>
   <div class="blob w-[300px] h-[300px] bg-pink/20 top-1/2 left-1/3" style="animation-delay:-11s"></div>
+  <canvas id="particlesCanvas" class="absolute inset-0 w-full h-full pointer-events-none"></canvas>
 </div>
 
 <!-- توهج يتبع الماوس (ديسكتوب فقط) -->
@@ -172,14 +238,27 @@
         <a href="#projects" class="px-4 py-2 rounded-xl text-slate-300 hover:text-white hover:bg-white/5 transition">المشاريع</a>
         <a href="#skills"   class="px-4 py-2 rounded-xl text-slate-300 hover:text-white hover:bg-white/5 transition">المهارات</a>
         <a href="#contact"  class="px-4 py-2 rounded-xl text-slate-300 hover:text-white hover:bg-white/5 transition">التواصل</a>
-        <button onclick="copyDiscord()" class="btn-glow mr-2 px-4 py-2 rounded-xl font-bold text-sm text-void"
+        
+        <!-- زر لوحة الأوامر (Ctrl+K) -->
+        <button onclick="openCmdPalette()" class="glass flex items-center gap-2 px-3.5 py-2 rounded-xl text-xs text-slate-300 hover:text-white hover:border-neon/50 transition mr-2" title="لوحة الأوامر الذكية (Ctrl+K)">
+          <span>🔍</span>
+          <span class="hidden lg:inline text-slate-400">أوامر سريعة</span>
+          <kbd id="kbdHint" class="font-mono text-[10px] bg-white/10 text-neon px-2 py-0.5 rounded-lg border border-white/15">Ctrl K</kbd>
+        </button>
+
+        <button onclick="copyDiscord()" class="btn-glow mr-1 px-4 py-2 rounded-xl font-bold text-sm text-void"
                 style="background:linear-gradient(135deg,#38bdf8,#a78bfa);">💬 Discord</button>
       </div>
 
       <!-- زرار الموبايل -->
-      <button id="menuBtn" class="md:hidden w-10 h-10 rounded-xl glass grid place-items-center text-xl" aria-label="القائمة">
-        ☰
-      </button>
+      <div class="flex md:hidden items-center gap-2">
+        <button id="mobileCmdBtn" onclick="openCmdPalette()" class="w-10 h-10 rounded-xl glass grid place-items-center text-sm font-mono text-neon" aria-label="بحث سريع">
+          ⌃K
+        </button>
+        <button id="menuBtn" class="w-10 h-10 rounded-xl glass grid place-items-center text-xl" aria-label="القائمة">
+          ☰
+        </button>
+      </div>
     </div>
   </div>
 
@@ -438,7 +517,7 @@
       <div class="grid sm:grid-cols-2 gap-6">
 
         <!-- بطاقة الديسكورد (نسخ) -->
-        <button onclick="copyDiscord()" class="reveal group relative glass rounded-3xl p-8 text-right cursor-pointer overflow-hidden text-left" style="dir:ltr">
+        <button onclick="copyDiscord()" class="reveal tilt group relative glass rounded-3xl p-8 text-right cursor-pointer overflow-hidden text-left" style="dir:ltr">
           <div class="absolute -top-10 -right-10 w-40 h-40 rounded-full opacity-25 group-hover:opacity-50 transition" style="background:radial-gradient(circle,#5865F2,transparent 65%);"></div>
           <div class="flex items-center gap-4 mb-6">
             <div class="relative">
@@ -457,7 +536,7 @@
         </button>
 
         <!-- روابط الحسابات -->
-        <div class="reveal glass rounded-3xl p-8 flex flex-col gap-3" style="transition-delay:.12s">
+        <div class="reveal tilt relative overflow-hidden glass rounded-3xl p-8 flex flex-col gap-3" style="transition-delay:.12s">
           <div class="font-black text-lg text-white mb-1">روابطي 🔗</div>
 
           <a href="https://github.com/mohamedkd652-design" target="_blank" rel="noopener"
@@ -533,10 +612,57 @@
   <span id="toastIcon">✅</span><span id="toastMsg"></span>
 </div>
 
+<!-- ======== لوحة الأوامر الذكية (Ctrl+K) ======== -->
+<div id="cmdPalette" role="dialog" aria-modal="true" aria-label="لوحة الأوامر السريعة" class="fixed inset-0 z-[90]">
+  <div class="absolute inset-0 bg-black/70 backdrop-blur-sm" data-cmd-close></div>
+  <div class="absolute inset-0 flex items-start justify-center pt-[9vh] px-4 overflow-y-auto">
+    <div id="cmdPanel" class="glass-strong rounded-3xl w-full max-w-xl overflow-hidden"
+         style="box-shadow:0 30px 90px rgba(0,0,0,.6), 0 0 50px rgba(56,189,248,.14);">
+
+      <div class="flex items-center gap-3 px-5 py-4 border-b border-white/10">
+        <span class="text-neon text-lg shrink-0">🔍</span>
+        <input id="cmdInput" type="text" dir="rtl" autocomplete="off" spellcheck="false"
+               class="flex-1 min-w-0 bg-transparent outline-none text-white placeholder-slate-500 text-base font-bold"
+               placeholder="اكتب اسم قسم أو أمر…"
+               role="combobox" aria-expanded="true" aria-controls="cmdList" aria-autocomplete="list" aria-label="ابحث عن قسم أو أمر">
+        <kbd class="font-mono text-[10px] bg-white/10 text-slate-300 px-2 py-1 rounded-lg border border-white/15 shrink-0">Esc</kbd>
+      </div>
+
+      <div id="cmdList" role="listbox" aria-label="النتائج" class="max-h-[54vh] overflow-y-auto p-2.5"></div>
+
+      <div class="flex items-center justify-between gap-3 px-5 py-3 border-t border-white/10 text-[11px] text-slate-500 font-bold">
+        <span class="flex items-center gap-3.5">
+          <span>↑ ↓ تنقّل</span><span>↵ تنفيذ</span><span>Esc إغلاق</span>
+        </span>
+        <span class="font-mono text-neon/70" id="kbdHintFoot">Ctrl K</span>
+      </div>
+    </div>
+  </div>
+</div>
+
 <script>
 /* ================= الأدوات ================= */
 const $  = (s, c=document) => c.querySelector(s);
 const $$ = (s, c=document) => [...c.querySelectorAll(s)];
+
+const IS_MAC = /Mac|iPhone|iPad|iPod/.test(navigator.platform || navigator.userAgent);
+function escapeHtml(s) {
+  return String(s).replace(/[&<>"']/g, c => ({ '&':'&amp;', '<':'&lt;', '>':'&gt;', '"':'&quot;', "'":'&#39;' }[c]));
+}
+
+/* ================= إعدادات الحركة (Reduced Motion) =================
+   التفضيل الافتراضي من النظام، ونقدر المستخدم يغيّره من لوحة الأوامر
+   والاختيار بيتحفظ في localStorage عشان يفضل بعد الـreload. */
+const MQ_REDUCE = matchMedia('(prefers-reduced-motion: reduce)');
+let reducedManual = localStorage.getItem('vortex-reduced');           // '1' | '0' | null
+let REDUCED = reducedManual !== null ? reducedManual === '1' : MQ_REDUCE.matches;
+
+function syncMotionClass() {
+  const r = document.documentElement;
+  r.classList.toggle('reduce-motion', REDUCED);
+  r.classList.toggle('motion-on', !REDUCED);
+}
+syncMotionClass();
 
 let toastTimer;
 function toast(msg, icon='✅') {
@@ -600,18 +726,214 @@ function rotator() {
 setInterval(rotator, 2400);
 $('#rotator').textContent = ROLE_WORDS[0];
 
-/* ================= ميلان كروت المشاريع (ديسكتوب فقط) ================= */
-if (window.matchMedia('(pointer:fine)').matches) {
-  $$('.tilt').forEach(card => {
-    card.addEventListener('mousemove', e => {
-      const r = card.getBoundingClientRect();
-      const x = (e.clientX - r.left) / r.width  - .5;
-      const y = (e.clientY - r.top)  / r.height - .5;
-      card.style.transform = `perspective(900px) rotateY(${x * 6}deg) rotateX(${-y * 6}deg) translateY(-3px)`;
-    });
-    card.addEventListener('mouseleave', () => { card.style.transform = ''; });
+/* ================= تهيئة 3D Tilt (vanilla-tilt) =================
+   بنستخدم VanillaTilt.init() بدل data-tilt عشان نقدر نبطّل التهيئة
+   لو المستخدم اختار تقليل الحركة أو كان على جهاز لمس.
+
+   ملاحظة: VanillaTilt.init() بترجع undefined، بس بتخزّن نسخة الـinstance
+   على العنصر نفسه في el.vanillaTilt — وعليها method اسمه destroy() فيه
+   removeEventListeners + cancelAnimationFrame + إزالة عنصر الـglare.
+   ولازم نحذف الخاصية قبل إعادة التهيئة لأن المكتبة بتعمل guard بـ
+   ("vanillaTilt" in e). */
+const TILT_OPTS = {
+  max: 8,                 // أقصى زاوية دوران بالدرجات
+  speed: 800,             // مدة التنعيم (ms)
+  perspective: 900,
+  glare: true,            // لمعة بتتبع الماوس
+  'max-glare': 0.22,
+  scale: 1.02,            // تقريب خفيف وقت الهوفر
+  reverse: false,         // RTL: الزاوية محسوبة من نص الكارت فمش متأثرة
+  gyroscope: false,       // ما نميلش الكارت على الموبايل
+};
+
+function destroyTilt() {
+  $$('.tilt').forEach(el => {
+    if (el.vanillaTilt && typeof el.vanillaTilt.destroy === 'function') {
+      try { el.vanillaTilt.destroy(); } catch (e) {}
+    }
+    delete el.vanillaTilt;              // لازم قبل إعادة التهيئة
+    // destroy() بيعمل resetGlare بس ومش بيشيل عنصر الـglare من الـDOM،
+    // فبدون السطر ده هتتراكم طبقة .js-tilt-glare مع كل تبديل.
+    el.querySelectorAll('.js-tilt-glare').forEach(g => g.remove());
+    el.style.transform = '';            // تنظيف احتياطي
+    el.style.backgroundImage = '';
   });
 }
+
+function mountTilt() {
+  destroyTilt();
+  // تدهور رشيق: لو الـCDN فشل (أوفلاين) هيفضل عندنا .tilt:hover box-shadow بس
+  if (typeof VanillaTilt === 'undefined') return;
+  if (REDUCED || !matchMedia('(pointer:fine)').matches) return;
+  VanillaTilt.init($$('.tilt'), TILT_OPTS);
+}
+
+// السكربت defer في <head>، فـVanillaTilt بيكون جاهز مع DOMContentLoaded
+if (document.readyState === 'loading') addEventListener('DOMContentLoaded', mountTilt);
+else mountTilt();
+
+/* ================= محرك الجزيئات التفاعلي (Canvas) ================= */
+const P_COLORS = ['56,189,248', '167,139,250', '244,114,182'];
+const LINK_DIST = 132, MOUSE_R = 190, TAU = Math.PI * 2;
+const pCanvas = $('#particlesCanvas');
+const pCtx    = pCanvas.getContext('2d');
+const pMouse  = { x: -1e4, y: -1e4, on: false };
+const pRipples = [];
+let pW = 0, pH = 0, pParts = [], pRaf = 0, pReady = false;
+
+/* ألوان خطوط الربط: buckets جاهزة عشان متعملش string concatenation جوّه الـloop */
+const LINK_STYLES = Array.from({ length: 11 }, (_, i) => `rgba(96,164,240,${(i * 0.015).toFixed(3)})`);
+
+/* sprite التوهج: بيتعمل مرة واحدة برّه الـloop — إنشاء gradients جوه
+   الـanimation loop هو أكبر سبب لتقطيع الأداء في canvas. */
+const glowSprite = (() => {
+  const s = document.createElement('canvas'), R = 32;
+  s.width = s.height = R * 2;
+  const c = s.getContext('2d');
+  const g = c.createRadialGradient(R, R, 0, R, R, R);
+  g.addColorStop(0,   'rgba(255,255,255,1)');
+  g.addColorStop(.35, 'rgba(255,255,255,.45)');
+  g.addColorStop(1,   'rgba(255,255,255,0)');
+  c.fillStyle = g; c.fillRect(0, 0, R * 2, R * 2);
+  return s;
+})();
+
+function buildParticles() {
+  // كثافة متكيّفة مع مساحة الشاشة (أخف على الموبايل)
+  const target = Math.max(35, Math.min(100, Math.round(pW * pH / 16000)));
+  pParts = [];
+  for (let i = 0; i < target; i++) {
+    const z    = Math.random();                 // 0 بعيد .. 1 قريب
+    const spd  = 0.06 + z * 0.24;
+    const ang  = Math.random() * TAU;
+    pParts.push({
+      x: Math.random() * pW,
+      y: Math.random() * pH,
+      vx: Math.cos(ang) * spd,
+      vy: Math.sin(ang) * spd,
+      r: 0.7 + z * 1.9,
+      // أقرب الجزيئات بس هي اللي بتاخد اللون الوردي
+      c: P_COLORS[(Math.random() * (z > .82 ? 3 : 2)) | 0],
+      a: 0.25 + z * 0.5,
+    });
+  }
+}
+
+function sizeCanvas() {
+  const dpr = Math.min(devicePixelRatio || 1, 2);
+  pW = innerWidth; pH = innerHeight;
+  pCanvas.width  = Math.floor(pW * dpr);
+  pCanvas.height = Math.floor(pH * dpr);
+  pCtx.setTransform(dpr, 0, 0, dpr, 0, 0);
+  buildParticles();
+}
+
+function stepParticles() {
+  for (const p of pParts) {
+    p.x += p.vx; p.y += p.vy;
+
+    if (pMouse.on) {                             // جذب الماوس
+      const dx = pMouse.x - p.x, dy = pMouse.y - p.y;
+      const d2 = dx * dx + dy * dy;
+      if (d2 < MOUSE_R * MOUSE_R && d2 > 1) {
+        const d = Math.sqrt(d2), f = (1 - d / MOUSE_R) * 0.07;
+        p.x += (dx / d) * f; p.y += (dy / d) * f;
+      }
+    }
+    for (const rp of pRipples) {                 // دفعة موجات الكليك
+      const dx = p.x - rp.x, dy = p.y - rp.y;
+      const d2 = dx * dx + dy * dy;
+      if (d2 < rp.r * rp.r && d2 > 1) {
+        const d = Math.sqrt(d2), f = (1 - d / rp.r) * 0.85;
+        p.x += (dx / d) * f; p.y += (dy / d) * f;
+      }
+    }
+    if (p.x < -20) p.x = pW + 20; else if (p.x > pW + 20) p.x = -20;   // التفاف الحواف
+    if (p.y < -20) p.y = pH + 20; else if (p.y > pH + 20) p.y = -20;
+  }
+  for (let i = pRipples.length - 1; i >= 0; i--) {
+    const rp = pRipples[i];
+    rp.life--; rp.r += 9;
+    if (rp.life <= 0) pRipples.splice(i, 1);
+  }
+}
+
+function drawParticles() {
+  const c = pCtx;
+  c.clearRect(0, 0, pW, pH);
+  c.globalCompositeOperation = 'lighter';        // جمع_additive = نيون
+
+  // خطوط الربط بين الجزيئات القريبة
+  c.lineWidth = 1;
+  for (let i = 0; i < pParts.length; i++) {
+    const a = pParts[i];
+    for (let j = i + 1; j < pParts.length; j++) {
+      const b = pParts[j];
+      const dx = a.x - b.x, dy = a.y - b.y;
+      const d2 = dx * dx + dy * dy;
+      if (d2 > LINK_DIST * LINK_DIST) continue;
+      const k = ((1 - Math.sqrt(d2) / LINK_DIST) * 10) | 0;
+      c.strokeStyle = LINK_STYLES[k];
+      c.beginPath(); c.moveTo(a.x, a.y); c.lineTo(b.x, b.y); c.stroke();
+    }
+  }
+
+  // موجات الكليك
+  for (const rp of pRipples) {
+    const k = rp.life / rp.max;
+    c.strokeStyle = `rgba(167,139,250,${(0.34 * k).toFixed(3)})`;
+    c.lineWidth = 1.6 * k;
+    c.beginPath(); c.arc(rp.x, rp.y, rp.r, 0, TAU); c.stroke();
+  }
+
+  // الجزيئات: هالة مرسومة من الـsprite + نواة
+  for (const p of pParts) {
+    const s = p.r * 5;
+    c.globalAlpha = p.a * 0.5;
+    c.drawImage(glowSprite, p.x - s, p.y - s, s * 2, s * 2);
+    c.globalAlpha = p.a;
+    c.fillStyle = `rgb(${p.c})`;
+    c.beginPath(); c.arc(p.x, p.y, p.r, 0, TAU); c.fill();
+  }
+  c.globalAlpha = 1;
+  c.globalCompositeOperation = 'source-over';
+}
+
+function particleLoop() {
+  stepParticles();
+  drawParticles();
+  pRaf = requestAnimationFrame(particleLoop);
+}
+
+function mountParticles() {
+  if (!pReady) { sizeCanvas(); pReady = true; }
+  cancelAnimationFrame(pRaf);
+  pCtx.clearRect(0, 0, pW, pH);
+  if (REDUCED) drawParticles(); else particleLoop();   // تقليل الحركة: فريم ثابت واحد
+}
+
+addEventListener('pointermove', e => { pMouse.x = e.clientX; pMouse.y = e.clientY; pMouse.on = true; }, { passive: true });
+addEventListener('pointerleave', () => { pMouse.on = false; });
+addEventListener('pointerdown', e => {
+  if (REDUCED) return;
+  if (e.target.closest && e.target.closest('#detailsModal, #cmdPalette')) return;
+  if (pRipples.length > 5) pRipples.shift();
+  pRipples.push({ x: e.clientX, y: e.clientY, r: 8, life: 34, max: 34 });
+}, { passive: true });
+
+let pRzT = 0;
+addEventListener('resize', () => {
+  cancelAnimationFrame(pRzT);
+  pRzT = requestAnimationFrame(() => { sizeCanvas(); if (REDUCED) drawParticles(); });
+});
+
+document.addEventListener('visibilitychange', () => {
+  if (REDUCED || !pReady) return;
+  cancelAnimationFrame(pRaf);
+  if (!document.hidden) particleLoop();
+});
+
+mountParticles();
 
 /* ================= توهج يتبع الماوس ================= */
 const glow = $('#cursorGlow');
@@ -678,7 +1000,7 @@ function closeDetails() {
   $('#detailsModal').classList.add('hidden'); $('#detailsModal').classList.remove('flex');
   document.body.style.overflow = '';
 }
-addEventListener('keydown', e => { if (e.key === 'Escape') closeDetails(); });
+/* ملاحظة: معالج Escape الموحّد في آخر السكربت (يتنقّل بين اللوحة والمودال) */
 
 /* ================= تحميل EXE ================= */
 function downloadExe(filename, hint) {
@@ -693,6 +1015,254 @@ function downloadExe(filename, hint) {
 
 /* توهج الماوس: إخفاء على الموبايل بعد اللمس */
 addEventListener('touchstart', () => glow.style.display = 'none', { once: true, passive: true });
+
+/* ================= تبديل الحركة المخفّضة ================= */
+function applyMotion() {
+  REDUCED = !REDUCED;
+  reducedManual = REDUCED ? '1' : '0';
+  localStorage.setItem('vortex-reduced', reducedManual);
+  syncMotionClass();
+  mountTilt();
+  mountParticles();
+  toast(REDUCED ? 'تم تفعيل الحركة المخفّضة — كل التأثيرات متوقفة' : 'الحركة الكاملة رجعت ⚡', '🎛️');
+}
+MQ_REDUCE.addEventListener('change', e => {
+  if (reducedManual !== null) return;      // اختيار المستخدم يغلب تفضيل النظام
+  REDUCED = e.matches;
+  syncMotionClass(); mountTilt(); mountParticles();
+});
+
+/* ================= لوحة الأوامر (Ctrl+K) ================= */
+const cmdPalette = $('#cmdPalette'), cmdInput = $('#cmdInput'), cmdList = $('#cmdList');
+let cmdResults = [], cmdIndex = 0, cmdPrevFocus = null, cmdOpen = false, cmdView = 'list';
+
+function goto(sel) {
+  const el = $(sel); if (!el) return;
+  el.scrollIntoView({ behavior: REDUCED ? 'auto' : 'smooth', block: 'start' });
+}
+function openLink(u) {
+  if (u.startsWith('mailto:')) location.href = u;
+  else window.open(u, '_blank', 'noopener');
+}
+
+const SHORTCUTS = [
+  ['Ctrl / ⌘ + K', 'فتح أو إغلاق اللوحة'],
+  ['/',            'فتح اللوحة بسرعة'],
+  ['↑ ↓',          'تنقّل بين النتائج'],
+  ['Enter',        'تنفيذ الأمر المحدد'],
+  ['Esc',          'إغلاق اللوحة أو المودال'],
+  ['Home / End',   'أول / آخر نتيجة'],
+];
+
+const COMMANDS = [
+  /* —— تنقّل —— */
+  { ico:'🏠', label:'الرئيسية',        group:'تنقّل', kw:'home top start',     run:() => goto('#top') },
+  { ico:'🚀', label:'المشاريع',        group:'تنقّل', kw:'projects work tools', run:() => goto('#projects') },
+  { ico:'⚡', label:'المهارات',        group:'تنقّل', kw:'skills toolkit',     run:() => goto('#skills') },
+  { ico:'💬', label:'التواصل',         group:'تنقّل', kw:'contact talk',       run:() => goto('#contact') },
+  { ico:'⬆️', label:'العودة للأعلى',  group:'تنقّل', kw:'up scroll top',     run:() => window.scrollTo({ top: 0, behavior: REDUCED ? 'auto' : 'smooth' }) },
+
+  /* —— إجراءات —— */
+  { ico:'📋', label:'نسخ اسم الديسكورد',      group:'إجراءات', kw:'copy discord user name',    run:() => copyDiscord() },
+  { ico:'⬇️', label:'تحميل VortexFocus.exe', group:'إجراءات', kw:'download focus exe timer',  run:() => downloadExe('VortexFocus.exe', 'بلّص VortexFocus.exe جنب index.html') },
+  { ico:'⬇️', label:'تحميل VortexRPC.exe',   group:'إجراءات', kw:'download rpc exe discord',  run:() => downloadExe('VortexRPC.exe', 'بلّص VortexRPC.exe جنب index.html') },
+  { ico:'🧠', label:'تفاصيل: Vortex Focus Hub', group:'إجراءات', kw:'focus hub details',      run:() => openDetails('focus') },
+  { ico:'💬', label:'تفاصيل: Vortex Custom RPC', group:'إجراءات', kw:'rpc details presence',   run:() => openDetails('rpc') },
+
+  /* —— حسابات —— */
+  { ico:'🐙', label:'GitHub',  group:'الحسابات', kw:'github repo code',          run:() => openLink('https://github.com/mohamedkd652-design') },
+  { ico:'▶️', label:'YouTube', group:'الحسابات', kw:'youtube channel video',     run:() => openLink('https://www.youtube.com/@VortexPlayz-l1o') },
+  { ico:'✉️', label:'البريد الإلكتروني', group:'الحسابات', kw:'email mail gmail mohamed', run:() => openLink('mailto:mohamedkd652@gmail.com') },
+
+  /* —— واجهة —— */
+  { ico:'🎛️', label:'تبديل الحركة المخفّضة', group:'واجهة', kw:'motion reduce accessibility calm',
+    run:() => applyMotion(), state:() => REDUCED ? 'مفعّلة' : 'معطّلة' },
+  { ico:'⌨️', label:'عرض اختصارات الكيبورد', group:'واجهة', kw:'keyboard shortcuts keys help', run:() => showShortcuts() },
+];
+
+/* تطبيع عربي قبل البحث: تشكيل + همزات + تاء مربوطة + ألف مقصورة */
+function arNormalize(s) {
+  return String(s).toLowerCase()
+    .replace(/[\u0610-\u061A\u064B-\u065F\u0670\u06D6-\u06ED]/g, '')  // تشكيل
+    .replace(/[\u0622\u0623\u0625\u0671]/g, '\u0627')                   // أ إ آ ٱ → ا
+    .replace(/\u0649/g, '\u064A')                                       // ى → ي
+    .replace(/\u0629/g, '\u0647')                                       // ة → ه
+    .replace(/\u0624/g, '\u0648')                                       // ؤ → و
+    .replace(/\u0626/g, '\u064A');                                      // ئ → ي
+}
+
+/* مطابقة subsequence خفيفة: بتسمح بكتابة "مه" تلاقي "المهارات" */
+function fuzzy(hay, needle) {
+  if (!needle) return 0;
+  let score = 0, hi = 0, first = -1;
+  for (let i = 0; i < needle.length; i++) {
+    const at = hay.indexOf(needle[i], hi);
+    if (at === -1) return -1;
+    if (i === 0) first = at;
+    score += at === hi ? 2 : 1;          // حروف متتابعة = نقاط أعلى
+    hi = at + 1;
+  }
+  if (first === 0) score += 10;          // بداية الكلمة = دفعة كبيرة
+  return score;
+}
+
+function scoreCmd(c, q) {
+  const byLabel = fuzzy(arNormalize(c.label), q);
+  if (byLabel >= 0) return byLabel + (q ? 5 : 0);   // نفضّل التطابق بالاسم
+  return fuzzy(arNormalize(c.kw || ''), q);
+}
+
+function renderCmds() {
+  const raw = cmdInput.value.trim();
+  const q = arNormalize(raw);
+  cmdResults = COMMANDS
+    .map(c => ({ c, s: scoreCmd(c, q) }))
+    .filter(o => o.s >= 0)
+    .sort((a, b) => b.s - a.s)
+    .map(o => o.c);
+
+  if (!cmdResults.length) {
+    cmdList.innerHTML = `<div class="py-12 text-center text-sm font-bold text-slate-500">لا توجد نتائج لـ «${escapeHtml(raw)}»</div>`;
+    cmdIndex = 0;
+    cmdInput.removeAttribute('aria-activedescendant');
+    return;
+  }
+
+  let html = '', lastGroup = null;
+  cmdResults.forEach((c, i) => {
+    if (c.group !== lastGroup) {
+      html += `<div role="presentation" class="px-3 pt-3 pb-1.5 text-[10px] font-black tracking-widest text-slate-500/80">${c.group}</div>`;
+      lastGroup = c.group;
+    }
+    const badge = c.state
+      ? `<span class="text-[10px] font-black text-gold bg-gold/10 border border-gold/25 rounded-md px-2 py-0.5 shrink-0">${c.state()}</span>`
+      : '';
+    const mark = i === cmdIndex
+      ? `<span class="text-neon text-xs shrink-0">◀</span>`
+      : `<span class="w-3 shrink-0"></span>`;
+    html += `<div role="option" id="cmdOpt${i}" aria-selected="${i === cmdIndex}" data-i="${i}"
+       class="cmd-item flex items-center gap-3 px-3 py-2.5 rounded-2xl cursor-pointer select-none">
+       <span class="cmd-ico text-lg w-7 text-center shrink-0">${c.ico}</span>
+       <span class="flex-1 min-w-0 text-sm font-bold text-slate-200 truncate">${c.label}</span>
+       ${badge}${mark}
+     </div>`;
+  });
+  cmdList.innerHTML = html;
+  setCmdIndex(0, false);
+}
+
+function setCmdIndex(i, scroll = true) {
+  if (!cmdResults.length) return;
+  cmdIndex = (i + cmdResults.length) % cmdResults.length;
+  $$('.cmd-item', cmdList).forEach((el, k) => el.setAttribute('aria-selected', String(k === cmdIndex)));
+  const cur = cmdList.querySelector('.cmd-item[aria-selected="true"]');
+  if (!cur) return;
+  if (scroll) cur.scrollIntoView({ block: 'nearest' });
+  cmdInput.setAttribute('aria-activedescendant', cur.id);
+}
+
+/* ===== عرض اختصارات الكيبورد (منظر بديل جوّه نفس اللوحة) ===== */
+function showShortcuts() {
+  cmdView = 'keys';
+  cmdInput.value = '';
+  cmdInput.placeholder = 'اضغط Esc أو Enter للرجوع للأوامر';
+  cmdList.innerHTML = `<div class="p-3 grid sm:grid-cols-2 gap-2.5">` + SHORTCUTS.map(([k, d]) => `
+    <div class="flex items-center justify-between gap-3 rounded-2xl bg-white/5 border border-white/10 px-4 py-3">
+      <span class="text-xs text-slate-400 font-bold leading-snug">${d}</span>
+      <kbd class="font-mono text-[11px] text-neon bg-neon/10 border border-neon/25 rounded-lg px-2.5 py-1 shrink-0">${k}</kbd>
+    </div>`).join('') + `</div>`;
+  cmdInput.removeAttribute('aria-activedescendant');
+}
+function backToList() {
+  cmdView = 'list';
+  cmdInput.placeholder = 'اكتب اسم قسم أو أمر…';
+  cmdInput.value = '';
+  renderCmds();
+  cmdInput.focus();
+}
+
+/* ===== فتح / إغلاق اللوحة ===== */
+function openCmdPalette() {
+  if (cmdOpen) return;
+  cmdPrevFocus = document.activeElement;
+  cmdOpen = true; cmdView = 'list';
+  cmdInput.placeholder = 'اكتب اسم قسم أو أمر…';
+  renderCmds();
+  document.body.style.overflow = 'hidden';
+  // لازم نضيف .open في فريم عشان الـopacity يعمل transition من 0،
+  // بس الـfocus لازم يتأجل لفريم تاني: طول ما اللوحة visibility:hidden
+  // المتصفح بيقبل الـfocus بهدوء وبيسيبها من غير error.
+  requestAnimationFrame(() => {
+    cmdPalette.classList.add('open');
+    requestAnimationFrame(() => cmdInput.focus());
+  });
+}
+function closeCmdPalette() {
+  if (!cmdOpen) return;
+  cmdOpen = false;
+  cmdPalette.classList.remove('open');
+  document.body.style.overflow = '';        // قبل تشغيل أي أمر (openDetails بيقفل تاني)
+  if (cmdPrevFocus && typeof cmdPrevFocus.focus === 'function') cmdPrevFocus.focus();
+  cmdPrevFocus = null;
+}
+function runCmd(c) {
+  if (!c) return;
+  closeCmdPalette();
+  c.run();
+}
+
+cmdInput.addEventListener('input', () => { if (cmdView === 'list') renderCmds(); });
+cmdList.addEventListener('pointermove', e => {
+  const it = e.target.closest('.cmd-item'); if (!it) return;
+  const i = +it.dataset.i;
+  if (i !== cmdIndex) setCmdIndex(i, false);
+});
+cmdList.addEventListener('click', e => {
+  const it = e.target.closest('.cmd-item'); if (!it) return;
+  runCmd(cmdResults[+it.dataset.i]);
+});
+cmdPalette.addEventListener('click', e => { if (e.target.closest('[data-cmd-close]')) closeCmdPalette(); });
+
+/* ===== معالج الكيبورد الموحّد ===== */
+addEventListener('keydown', e => {
+  const k = e.key, mod = e.ctrlKey || e.metaKey;
+
+  // Ctrl+K / ⌘K — بنمنع الـdefault عشان ما يفتحش شريط بحث المتصفح
+  if (mod && (k === 'k' || k === 'K')) {
+    e.preventDefault();
+    cmdOpen ? closeCmdPalette() : openCmdPalette();
+    return;
+  }
+
+  if (cmdOpen) {
+    if (k === 'Escape') { e.preventDefault(); cmdView === 'keys' ? backToList() : closeCmdPalette(); return; }
+    if (k === 'Enter')   { e.preventDefault(); cmdView === 'keys' ? backToList() : runCmd(cmdResults[cmdIndex]); return; }
+    if (cmdView !== 'list') return;                 // منظر الاختصارات: مفيش تنقّل
+    if (k === 'ArrowDown') { e.preventDefault(); setCmdIndex(cmdIndex + 1); return; }
+    if (k === 'ArrowUp')   { e.preventDefault(); setCmdIndex(cmdIndex - 1); return; }
+    if (k === 'Home')      { e.preventDefault(); setCmdIndex(0); return; }
+    if (k === 'End')       { e.preventDefault(); setCmdIndex(cmdResults.length - 1); return; }
+    return;
+  }
+
+  // Esc للمودال بس لما اللوحة مقفولة
+  if (k === 'Escape' && !$('#detailsModal').classList.contains('hidden')) {
+    e.preventDefault(); closeDetails();
+    return;
+  }
+
+  // "/" كاختصار بديل — بس لما التركيز مش في حقل إدخال
+  if (k === '/' && !mod && !e.altKey) {
+    const t = e.target, tag = t && t.tagName;
+    if (tag === 'INPUT' || tag === 'TEXTAREA' || (t && t.isContentEditable)) return;
+    e.preventDefault(); openCmdPalette();
+  }
+});
+
+/* ===== تسميات الأزرار حسب المنصة ===== */
+$('#mobileCmdBtn').textContent = IS_MAC ? '⌘K' : '⌃K';
+$('#kbdHint').textContent      = IS_MAC ? '⌘ K' : 'Ctrl K';
+$('#kbdHintFoot').textContent  = IS_MAC ? '⌘ K' : 'Ctrl K';
 </script>
 </body>
 </html>
